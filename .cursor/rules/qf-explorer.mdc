@@ -13,6 +13,7 @@ alwaysApply: true
 @qf-explorer-plan/implementation-stages.md
 @qf-explorer-plan/user-journey.md
 @qf-explorer-plan/project-structure.md
+@qf-explorer-plan/fsd-nextjs-integration.md
 
 
 ## Принципы разработки
