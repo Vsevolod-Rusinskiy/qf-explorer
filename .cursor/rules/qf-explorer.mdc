@@ -12,6 +12,8 @@ alwaysApply: true
 @qf-explorer-plan/architecture-overview.md
 @qf-explorer-plan/implementation-stages.md
 @qf-explorer-plan/user-journey.md
+@qf-explorer-plan/project-structure.md
+
 
 ## Принципы разработки
 1. Всегда сверяться с документацией перед внедрением новых технологий или подходов
