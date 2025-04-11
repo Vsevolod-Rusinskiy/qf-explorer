@@ -4,10 +4,16 @@ services:
     environment:
       POSTGRES_DB: squid
       POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      PGDATA: /var/lib/postgresql/data/pgdata
     shm_size: 1gb
+    command: ["postgres", "-c", "log_statement=all"]
     ports:
       - "${DB_PORT}:5432"
-      # command: ["postgres", "-c", "log_statement=all"]
-#    volumes:
-#      - ./data/db:/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
 

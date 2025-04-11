@@ -23,8 +23,8 @@ export async function initProcessor(): Promise<void> {
     console.log(`Номер финализированного блока: ${finalizedBlockNumber}`)
     
     // Определяем отступ от текущего блока (чтобы не обрабатывать слишком много блоков сразу)
-    // Для первого запуска используем небольшой отступ, например 1000 блоков
-    const blockOffset = 1000
+    // Для MVP достаточно получить только самые последние блоки, используем минимальный отступ
+    const blockOffset = 10
     
     // Устанавливаем стартовый блок с отступом от текущего
     const startingBlock = Math.max(1, finalizedBlockNumber - blockOffset)
