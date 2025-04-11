@@ -56,8 +56,8 @@ function getBlocks(ctx: ProcessorContext): Block[] {
             hash: header.hash,
             timestamp: new Date(header.timestamp!),
             validator: header.validator || '',
-            status: 'finalized', // Все обработанные блоки считаем финализированными
-            size: 0 // Размер блока пока не обрабатываем
+            status: 'finalized',
+            size: undefined // Не рассчитываем размер блока в MVP
         }))
     }
     
@@ -107,6 +107,9 @@ function getTransactions(ctx: ProcessorContext, blocks: Block[]): Transaction[] 
                 })
             }
             
+            // Определяем статус транзакции (упрощенно для MVP)
+            const status = extrinsic.success ? 'success' : 'failed'
+            
             // Создаем транзакцию
             transactions.push(new Transaction({
                 id: extrinsic.hash || `${block.header.height}-${extrinsic.indexInBlock || extrinsic.index}`,
@@ -117,7 +120,7 @@ function getTransactions(ctx: ProcessorContext, blocks: Block[]): Transaction[] 
                 to: toAccount,
                 amount: amount,
                 fee: extrinsic.fee || 0n,
-                status: extrinsic.success ? 'success' : 'failed',
+                status: status,
                 type: txType,
                 data: JSON.stringify(extrinsic.call?.args || {})
             }))

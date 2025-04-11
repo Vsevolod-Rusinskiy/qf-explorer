@@ -5,7 +5,14 @@
     "node": ">=16"
   },
   "scripts": {
-    "build": "rm -rf lib && tsc"
+    "build": "rm -rf lib && tsc",
+    "db:migrate": "npx squid-typeorm-migration apply",
+    "processor:start": "node lib/main.js",
+    "query-node:start": "squid-graphql-server",
+    "dev": "npm run build && npm run db:migrate && npm run processor:start",
+    "start": "npm run build && npm run db:migrate && concurrently 'npm run processor:start' 'npm run query-node:start'",
+    "test": "echo \"Info: no test specified\" && exit 0",
+    "clean": "rm -rf lib db .env"
   },
   "dependencies": {
     "@polkadot/api": "^15.9.1",
@@ -24,6 +31,7 @@
     "@subsquid/substrate-typegen": "^8.1.0",
     "@subsquid/typeorm-codegen": "^2.0.1",
     "@types/node": "^20.14.8",
+    "concurrently": "^8.2.2",
     "typescript": "^5.5.2"
   }
 }
