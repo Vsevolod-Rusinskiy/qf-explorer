@@ -20,5 +20,3 @@ export interface SystemExtrinsicFailedEvent extends BaseEvent {
   extrinsicId: string
   error: string
 }
-
-export * as balances from './balances/events'
