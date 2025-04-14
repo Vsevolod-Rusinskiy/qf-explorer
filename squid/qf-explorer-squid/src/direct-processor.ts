@@ -25,7 +25,7 @@ const dataSourceConfig = {
 const BLOCKS_LIMIT = 10
 
 // Сколько батчей обработать
-const MAX_BATCHES = 2
+const MAX_BATCHES = 8
 
 // Счетчик батчей и общего количества блоков
 let batchCount = 0
@@ -130,13 +130,19 @@ async function main() {
                             
                             // Анализируем события для поиска информации о переводе
                             for (const event of extrinsic.events) {
+                                console.log(`Событие: ${event.name}, индекс: ${event.index}, блок: ${item.header.height}`)
+                                
                                 if (event.name === 'Balances.Transfer') {
                                     try {
+                                        console.log('Найдено событие Balances.Transfer!')
                                         const args = event.args
+                                        console.log('Аргументы события:', JSON.stringify(args))
+                                        
                                         if (args && args.from && args.to) {
                                             // Извлекаем адреса отправителя и получателя
                                             const fromAddress = args.from.toString()
                                             const toAddress = args.to.toString()
+                                            console.log(`Перевод от ${fromAddress} к ${toAddress}`)
                                             
                                             // Добавляем аккаунты, если они еще не обработаны
                                             if (!processedAccounts.has(fromAddress)) {
@@ -145,6 +151,7 @@ async function main() {
                                                     balance: 0n,
                                                     updatedAt: new Date()
                                                 }))
+                                                console.log(`Добавлен аккаунт отправителя: ${fromAddress}`)
                                             }
                                             
                                             if (!processedAccounts.has(toAddress)) {
@@ -153,6 +160,7 @@ async function main() {
                                                     balance: 0n,
                                                     updatedAt: new Date()
                                                 }))
+                                                console.log(`Добавлен аккаунт получателя: ${toAddress}`)
                                             }
                                             
                                             // Устанавливаем отправителя и получателя
@@ -161,20 +169,29 @@ async function main() {
                                             
                                             if (sender) {
                                                 tx.from = sender
+                                                console.log(`Установлен отправитель для транзакции ${txId}: ${fromAddress}`)
                                             }
                                             
                                             if (recipient) {
                                                 tx.to = recipient
+                                                console.log(`Установлен получатель для транзакции ${txId}: ${toAddress}`)
                                             }
                                             
                                             // Устанавливаем сумму перевода, если доступна
                                             if (args.amount) {
                                                 tx.amount = BigInt(args.amount.toString())
+                                                console.log(`Установлена сумма для транзакции ${txId}: ${args.amount.toString()}`)
                                             }
                                         }
                                     } catch (error) {
                                         console.error('Ошибка при обработке события Balances.Transfer:', error)
                                     }
+                                }
+                                
+                                // Также проверяем события связанные с балансами и другими действиями
+                                else if (event.name.startsWith('Balances.')) {
+                                    console.log(`Обнаружено другое событие баланса: ${event.name}`)
+                                    console.log('Аргументы:', JSON.stringify(event.args))
                                 }
                             }
                             
@@ -191,6 +208,10 @@ async function main() {
                 
                 console.log(`Обработка ${blocks.length} блоков с ${transactions.length} транзакциями и ${processedAccounts.size} аккаунтами...`)
                 console.log(`Всего обработано блоков: ${totalProcessedBlocks}, транзакций: ${totalProcessedTransactions}`)
+                
+                if (processedAccounts.size > 0) {
+                    console.log('Найденные аккаунты:', [...processedAccounts.keys()])
+                }
                 
                 // Сохраняем блоки
                 if (blocks.length > 0) {
