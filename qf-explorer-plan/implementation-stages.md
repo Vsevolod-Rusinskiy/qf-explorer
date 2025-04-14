@@ -36,97 +36,7 @@
   ```
 - Реализация процессоров для обработки блоков и экстринзиков
 
-## 3. Бэкенд: API для фронтенда (1 день)
-- Создание NestJS приложения:
-  ```bash
-  nest new explorer-backend
-  ```
-- Установка Swagger для NestJS:
-  ```bash
-  npm install @nestjs/swagger swagger-ui-express
-  ```
-- Настройка Swagger в main.ts:
-  ```typescript
-  // main.ts
-  import { NestFactory } from '@nestjs/core';
-  import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-  import { AppModule } from './app.module';
-  
-  async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    
-    const config = new DocumentBuilder()
-      .setTitle('QF Explorer API')
-      .setDescription('API для блок-эксплорера QF Network')
-      .setVersion('1.0')
-      .build();
-    
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
-    
-    await app.listen(3000);
-  }
-  bootstrap();
-  ```
-- Добавление Swagger декораторов к контроллерам:
-  ```typescript
-  // blocks.controller.ts
-  import { Controller, Get, Param } from '@nestjs/common';
-  import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-  import { BlocksService } from './blocks.service';
-  import { BlockDto } from './dto/block.dto';
-  
-  @ApiTags('blocks')
-  @Controller('blocks')
-  export class BlocksController {
-    constructor(private readonly blocksService: BlocksService) {}
-    
-    @Get()
-    @ApiOperation({ summary: 'Получить список последних блоков' })
-    @ApiResponse({ 
-      status: 200, 
-      description: 'Список блоков',
-      type: [BlockDto]
-    })
-    findAll() {
-      return this.blocksService.findAll();
-    }
-    
-    @Get(':id')
-    @ApiOperation({ summary: 'Получить блок по идентификатору' })
-    @ApiResponse({ 
-      status: 200, 
-      description: 'Данные блока',
-      type: BlockDto
-    })
-    findOne(@Param('id') id: string) {
-      return this.blocksService.findOne(+id);
-    }
-  }
-  ```
-- Настройка структуры NestJS приложения:
-  ```
-  /src
-    /modules
-      /blocks
-        blocks.module.ts
-        blocks.service.ts
-        blocks.controller.ts
-      /transactions
-        transactions.module.ts
-        transactions.service.ts
-        transactions.controller.ts
-      /accounts
-        accounts.module.ts
-        accounts.service.ts
-        accounts.controller.ts
-    /shared
-      /interfaces
-      /dto
-      /utils
-    app.module.ts
-    main.ts
-  ```
+## 3. Настройка GraphQL API (1 день)
 - Настройка Hasura с PostgreSQL
 - Создание GraphQL схемы (авто-генерация через Hasura)
 - Определение запросов для основных данных:
@@ -185,58 +95,15 @@
     cache: new InMemoryCache()
   });
   ```
-- Установка и настройка React Query для работы с REST API:
-  ```bash
-  npm install @tanstack/react-query
-  ```
-- Настройка Orval для генерации API-клиентов из OpenAPI:
-  ```bash
-  npm install orval --save-dev
-  ```
-- Создание конфигурации Orval:
-  ```javascript
-  // orval.config.js
-  module.exports = {
-    qfExplorer: {
-      output: {
-        mode: 'tags-split',
-        target: 'src/7_shared/api/rest/generated.ts',
-        schemas: 'src/7_shared/api/rest/model',
-        client: 'react-query',
-        override: {
-          mutator: {
-            path: 'src/7_shared/api/rest/axios-client.ts',
-            name: 'customInstance',
-          }
-        }
-      },
-      input: {
-        target: 'http://localhost:3000/api-json',
-      }
-    }
-  }
-  ```
 - Создание провайдеров для API:
   ```typescript
   // src/1_app/providers/api-provider.tsx
   import { ApolloProvider } from '@apollo/client';
-  import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
   import { apolloClient } from '7_shared/api/graphql-client';
-  
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        retry: 1,
-      },
-    },
-  });
   
   export const ApiProvider = ({ children }) => (
     <ApolloProvider client={apolloClient}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      {children}
     </ApolloProvider>
   );
   ```
@@ -264,20 +131,21 @@
   - Возможность копирования адреса
 
 ## 7. Фронтенд: Поиск и дополнительные функции (1 день)
-- Реализация глобального поиска:
-  ```typescript
-  async function search(query: string) {
-    if (query.match(/^[0-9]+$/)) {
-      // Поиск по номеру блока
-      return searchByBlockNumber(parseInt(query));
-    } else if (query.startsWith('0x') && query.length === 66) {
-      // Поиск по хешу транзакции
-      return searchByTransactionHash(query);
-    } else if (query.startsWith('0x') || query.startsWith('5')) {
-      // Поиск по адресу аккаунта
-      return searchByAccountAddress(query);
+- Реализация глобального поиска через GraphQL:
+  ```graphql
+  query Search($query: String!) {
+    blocks(where: {block_number: {_eq: $query}}) {
+      id
+      block_number
     }
-    return null;
+    transactions(where: {tx_hash: {_eq: $query}}) {
+      id
+      tx_hash
+    }
+    accounts(where: {address: {_eq: $query}}) {
+      id
+      address
+    }
   }
   ```
 - Добавление статистики сети на главную страницу:

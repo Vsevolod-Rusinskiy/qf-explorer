@@ -6,10 +6,10 @@
 |         (React/Next.js, Mobile Apps, or 3rd-Party Consumers)         |
 +-----------------------------------------------------------------------+
                                  |
-                                 | (GraphQL/WebSockets/REST)
+                                 | (GraphQL/WebSockets)
                                  ▼
 +-----------------------------------------------------------------------+
-|                       Hasura GraphQL & APIs                          |
+|                       Hasura GraphQL Engine                           |
 |       (Auto-generated schema, real-time subscriptions, rate limiting) |
 +-----------------------------------------------------------------------+
                                  |
@@ -43,7 +43,6 @@
 - **GraphQL-клиент** - для коммуникации с API
 
 ### API слой (Уровень 2)
-- **NestJS** - основной фреймворк для бэкенда
 - **Hasura GraphQL Engine** - для автоматической генерации API
 - **Поддержка реального времени** - через веб-сокеты (планируется для будущих версий)
 - **Базовая защита** - CORS и rate limiting в первой фазе

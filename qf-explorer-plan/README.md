@@ -12,10 +12,10 @@ https://github.com/QuantumFusion-network/spec/issues/244
 |         (React/Next.js, Mobile Apps, or 3rd-Party Consumers)         |
 +-----------------------------------------------------------------------+
                                  |
-                                 | (GraphQL/WebSockets/REST)
+                                 | (GraphQL/WebSockets)
                                  ▼
 +-----------------------------------------------------------------------+
-|                       Hasura GraphQL & APIs                          |
+|                       Hasura GraphQL Engine                          |
 |       (Auto-generated schema, real-time subscriptions, rate limiting) |
 +-----------------------------------------------------------------------+
                                  |
@@ -49,7 +49,7 @@ https://github.com/QuantumFusion-network/spec/issues/244
 
 - **[implementation-stages.md](implementation-stages.md)** - поэтапный план реализации базовой функциональности блок-эксплорера (без работы со смарт-контрактами, которая запланирована на следующий этап).
 
-- **[user-journey.md](user-journey.md)** - подробное описание пользовательского пути в приложении с техническими деталями по использованию различных типов API (GraphQL, REST, WebSockets).
+- **[user-journey.md](user-journey.md)** - подробное описание пользовательского пути в приложении с техническими деталями по использованию GraphQL API.
 
 - **[project-structure.md](project-structure.md)** - детальная структура проекта и организация кода.
 
@@ -93,8 +93,8 @@ https://github.com/QuantumFusion-network/spec/issues/244
 
 - ✅ **Фронтенд**: Создана базовая структура проекта на Next.js
 - ✅ **UI**: Реализованы страницы для просмотра блоков и деталей блока с заглушками
-- ⏳ **Бэкенд**: Скоро начнется работа над индексацией блоков
-- ⏳ **API**: Планируется настройка Hasura и NestJS
+- ✅ **Бэкенд**: Настроена индексация блоков через Squid SDK
+- ✅ **API**: Настроена Hasura GraphQL Engine
 
 Для получения детальной информации по прогрессу каждого этапа см. [progress-tracking.md](progress-tracking.md).
 
@@ -112,13 +112,8 @@ https://github.com/QuantumFusion-network/spec/issues/244
 
 - **Фронтенд**: React/Next.js с TypeScript, Feature-Sliced Design (FSD) архитектура
   - Apollo Client для работы с GraphQL API (Hasura)
-  - React Query для управления состоянием и запросами к REST API
-  - Orval для автоматической генерации клиентов REST API
-- **Бэкенд**: NestJS, TypeScript
-  - Swagger для документации API и генерации OpenAPI спецификации
 - **API**: 
   - Hasura GraphQL Engine для GraphQL API
-  - NestJS для REST API
   - WebSockets для будущей поддержки реального времени
 - **База данных**: PostgreSQL для хранения данных блокчейна
 - **Индексация**: Squid SDK для обработки блоков и транзакций
@@ -128,9 +123,9 @@ https://github.com/QuantumFusion-network/spec/issues/244
 
 После изучения этой документации следующим шагом будет:
 
-1. Настройка Squid SDK для индексации блоков
-2. Создание схемы PostgreSQL для хранения данных
-3. Настройка Hasura GraphQL Engine
-4. Интеграция фронтенда с API
-5. Разработка страниц транзакций и аккаунтов
+1. Настройка Apollo Client во фронтенде
+2. Создание базовых UI компонентов
+3. Разработка страниц транзакций и аккаунтов
+4. Добавление поиска
+5. Настройка WebSocket для обновлений в реальном времени
 
