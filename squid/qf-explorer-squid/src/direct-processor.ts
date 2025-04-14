@@ -24,9 +24,17 @@ const dataSourceConfig = {
 // Количество последних блоков для обработки
 const BLOCKS_LIMIT = 10
 
+// Сколько батчей обработать
+const MAX_BATCHES = 2
+
+// Счетчик батчей и общего количества блоков
+let batchCount = 0
+let totalProcessedBlocks = 0
+let totalProcessedTransactions = 0
+
 async function main() {
     console.log('Запуск процессора с прямыми настройками TypeORM...')
-    console.log(`Будет обработано не более ${BLOCKS_LIMIT} последних блоков`)
+    console.log(`Будет обработано только ${MAX_BATCHES} батчей блоков`)
     
     try {
         // Создаем источник данных TypeORM
@@ -40,6 +48,11 @@ async function main() {
         console.log('Проверка структуры таблиц...')
         const tables = await dataSource.query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public'`)
         console.log('Таблицы в базе данных:', tables.map((t: any) => t.tablename))
+        
+        // Очищаем таблицы для начала с чистого листа
+        console.log('Очистка таблиц перед обработкой...')
+        await dataSource.query(`TRUNCATE TABLE block, transaction, account, statistics CASCADE`)
+        console.log('Таблицы очищены')
         
         // Закрываем явное соединение
         await dataSource.destroy()
@@ -55,12 +68,33 @@ async function main() {
             isolationLevel: 'READ COMMITTED'
         }), async (ctx) => {
             try {
+                // Увеличиваем счетчик батчей
+                batchCount++
+                console.log(`Обработка батча #${batchCount} из ${MAX_BATCHES}...`)
+                
+                // Если достигли максимального количества батчей, останавливаем процессор
+                if (batchCount > MAX_BATCHES) {
+                    console.log(`Достигнуто ограничение в ${MAX_BATCHES} батчей, завершаем обработку.`)
+                    
+                    // Завершаем процесс после текущего батча
+                    setTimeout(() => {
+                        console.log('Завершение процесса...')
+                        process.exit(0)
+                    }, 100)
+                    
+                    return
+                }
+                
                 // Получаем данные блоков
                 const blocks: Block[] = []
                 const processedAccounts = new Map<string, Account>()
                 const transactions: Transaction[] = []
                 
-                for (const item of ctx.blocks) {
+                // Используем только последние BLOCKS_LIMIT блоков из текущего батча
+                const limitedBlocks = ctx.blocks.slice(-BLOCKS_LIMIT)
+                console.log(`Ограничиваем до ${BLOCKS_LIMIT} блоков из ${ctx.blocks.length} полученных`)
+                
+                for (const item of limitedBlocks) {
                     const block = new Block({
                         id: item.header.height.toString(),
                         hash: item.header.hash,
@@ -151,7 +185,12 @@ async function main() {
                     }
                 }
                 
+                // Обновляем счетчики общего количества блоков и транзакций
+                totalProcessedBlocks += blocks.length
+                totalProcessedTransactions += transactions.length
+                
                 console.log(`Обработка ${blocks.length} блоков с ${transactions.length} транзакциями и ${processedAccounts.size} аккаунтами...`)
+                console.log(`Всего обработано блоков: ${totalProcessedBlocks}, транзакций: ${totalProcessedTransactions}`)
                 
                 // Сохраняем блоки
                 if (blocks.length > 0) {
@@ -173,30 +212,24 @@ async function main() {
                 
                 // Создаем или обновляем статистику
                 try {
-                    const existing = await ctx.store.findOneBy(Statistics, { id: 'current' })
-                    const stats = existing || new Statistics({
+                    // Создаем новую статистику с общим количеством обработанных блоков
+                    const stats = new Statistics({
                         id: 'current',
-                        totalBlocks: 0,
-                        totalTransactions: 0,
-                        totalAccounts: 0,
+                        totalBlocks: totalProcessedBlocks, // Общее количество блоков
+                        totalTransactions: totalProcessedTransactions, // Общее количество транзакций
+                        totalAccounts: processedAccounts.size,
                         averageBlockTime: 0,
-                        lastBlock: 0,
+                        lastBlock: blocks.length > 0 ? parseInt(blocks[blocks.length - 1].id) : 0,
                         updatedAt: new Date()
                     })
                     
-                    stats.totalBlocks += blocks.length
-                    stats.totalTransactions += transactions.length
-                    stats.totalAccounts = processedAccounts.size
-                    stats.lastBlock = blocks.length > 0 ? parseInt(blocks[blocks.length - 1].id) : stats.lastBlock
-                    stats.updatedAt = new Date()
-                    
                     await ctx.store.upsert(stats)
-                    console.log('Статистика успешно обновлена')
+                    console.log(`Статистика успешно обновлена: ${totalProcessedBlocks} блоков, ${totalProcessedTransactions} транзакций`)
                 } catch (error) {
                     console.error('Ошибка при обновлении статистики:', error)
                 }
                 
-                console.log('Обработка блока успешно завершена')
+                console.log('Обработка батча успешно завершена')
             } catch (error) {
                 console.error('Ошибка при обработке блока:', error)
                 throw error
