@@ -16,6 +16,9 @@ alwaysApply: true
 @qf-explorer-plan/fsd-nextjs-integration.md
 @qf-explorer-plan/fsd-eslint-config.md
 @qf-explorer-plan/progress-tracking.md
+@qf-explorer-plan/database-schema.md
+@qf-explorer-plan/refactoring.md
+@qf-explorer-plan/original-issue-ru.md
 
 
 ## Принципы разработки
