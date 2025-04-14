@@ -1,0 +1,22 @@
+version: '3.6'
+services:
+  graphql-engine:
+    image: hasura/graphql-engine:v2.33.4
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      ## PostgreSQL connection configuration
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres@host.docker.internal:5433/squid
+      ## Enable console
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      ## Enable dev mode for better debugging
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      ## Disable JWT auth for now (will add later)
+      HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      ## Enable logs
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## Allow lists configuration
+      HASURA_GRAPHQL_ENABLE_ALLOWLIST: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
