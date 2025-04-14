@@ -4,10 +4,12 @@ import { processor } from './processor'
 /**
  * Инициализирует процессор с динамическим определением начального блока
  * Эта функция должна быть вызвана перед запуском процессора
+ * @param blocksLimit Максимальное количество блоков для обработки (по умолчанию 10)
  */
-export async function initProcessor(): Promise<void> {
+export async function initProcessor(blocksLimit: number = 10): Promise<void> {
   try {
     console.log('Инициализация процессора и определение начального блока...')
+    console.log(`Будут обработаны последние ${blocksLimit} блоков`)
     
     // Подключаемся к RPC эндпоинту
     const provider = new WsProvider(process.env.RPC_QF_WS || 'wss://dev.qfnetwork.xyz/wss')
@@ -22,9 +24,8 @@ export async function initProcessor(): Promise<void> {
     const finalizedBlockNumber = finalizedHeader.number.toNumber()
     console.log(`Номер финализированного блока: ${finalizedBlockNumber}`)
     
-    // Определяем отступ от текущего блока (чтобы не обрабатывать слишком много блоков сразу)
-    // Для MVP достаточно получить только самые последние блоки, используем минимальный отступ
-    const blockOffset = 10
+    // Используем параметр blocksLimit как отступ
+    const blockOffset = blocksLimit
     
     // Устанавливаем стартовый блок с отступом от текущего
     const startingBlock = Math.max(1, finalizedBlockNumber - blockOffset)

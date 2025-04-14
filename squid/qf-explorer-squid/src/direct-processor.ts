@@ -21,8 +21,12 @@ const dataSourceConfig = {
     entities: [Account, Block, Transaction, Statistics]
 }
 
+// Количество последних блоков для обработки
+const BLOCKS_LIMIT = 10
+
 async function main() {
     console.log('Запуск процессора с прямыми настройками TypeORM...')
+    console.log(`Будет обработано не более ${BLOCKS_LIMIT} последних блоков`)
     
     try {
         // Создаем источник данных TypeORM
@@ -37,21 +41,12 @@ async function main() {
         const tables = await dataSource.query(`SELECT tablename FROM pg_tables WHERE schemaname = 'public'`)
         console.log('Таблицы в базе данных:', tables.map((t: any) => t.tablename))
         
-        // Проверяем колонки в таблицах
-        for (const table of ['account', 'block', 'transaction', 'statistics']) {
-            const columns = await dataSource.query(`
-                SELECT column_name, data_type, is_nullable
-                FROM information_schema.columns
-                WHERE table_name = '${table}'
-            `)
-            console.log(`Структура таблицы ${table}:`, columns)
-        }
-        
         // Закрываем явное соединение
         await dataSource.destroy()
         
         // Инициализируем процессор с настройками начального блока
-        await initProcessor()
+        // и ограничиваем количество блоков
+        await initProcessor(BLOCKS_LIMIT)
         
         // Запускаем процессор с нашими TypeORM настройками
         await processor.run(new TypeormDatabase({
@@ -62,6 +57,9 @@ async function main() {
             try {
                 // Получаем данные блоков
                 const blocks: Block[] = []
+                const processedAccounts = new Map<string, Account>()
+                const transactions: Transaction[] = []
+                
                 for (const item of ctx.blocks) {
                     const block = new Block({
                         id: item.header.height.toString(),
@@ -71,8 +69,89 @@ async function main() {
                         status: 'finalized'
                     })
                     blocks.push(block)
+                    
+                    // Обработка транзакций в блоке
+                    for (const extrinsic of item.extrinsics) {
+                        try {
+                            // Создаем идентификатор транзакции
+                            const txId = `${item.header.height}-${extrinsic.index}`
+                            
+                            // Получаем вызов и его данные, если они доступны
+                            const call = extrinsic.call ? await extrinsic.getCall() : null
+                            
+                            // Создаем транзакцию с доступными данными
+                            const tx = new Transaction({
+                                id: txId,
+                                blockNumber: parseInt(block.id),
+                                timestamp: new Date(item.header.timestamp || Date.now()),
+                                status: extrinsic.success ? 'success' : 'failed',
+                                type: call?.name || 'unknown'
+                            })
+                            tx.block = block
+                            
+                            // Устанавливаем плату за транзакцию, если доступна
+                            if (extrinsic.fee) {
+                                tx.fee = extrinsic.fee
+                            }
+                            
+                            // Анализируем события для поиска информации о переводе
+                            for (const event of extrinsic.events) {
+                                if (event.name === 'Balances.Transfer') {
+                                    try {
+                                        const args = event.args
+                                        if (args && args.from && args.to) {
+                                            // Извлекаем адреса отправителя и получателя
+                                            const fromAddress = args.from.toString()
+                                            const toAddress = args.to.toString()
+                                            
+                                            // Добавляем аккаунты, если они еще не обработаны
+                                            if (!processedAccounts.has(fromAddress)) {
+                                                processedAccounts.set(fromAddress, new Account({
+                                                    id: fromAddress,
+                                                    balance: 0n,
+                                                    updatedAt: new Date()
+                                                }))
+                                            }
+                                            
+                                            if (!processedAccounts.has(toAddress)) {
+                                                processedAccounts.set(toAddress, new Account({
+                                                    id: toAddress,
+                                                    balance: 0n,
+                                                    updatedAt: new Date()
+                                                }))
+                                            }
+                                            
+                                            // Устанавливаем отправителя и получателя
+                                            const sender = processedAccounts.get(fromAddress)
+                                            const recipient = processedAccounts.get(toAddress)
+                                            
+                                            if (sender) {
+                                                tx.from = sender
+                                            }
+                                            
+                                            if (recipient) {
+                                                tx.to = recipient
+                                            }
+                                            
+                                            // Устанавливаем сумму перевода, если доступна
+                                            if (args.amount) {
+                                                tx.amount = BigInt(args.amount.toString())
+                                            }
+                                        }
+                                    } catch (error) {
+                                        console.error('Ошибка при обработке события Balances.Transfer:', error)
+                                    }
+                                }
+                            }
+                            
+                            transactions.push(tx)
+                        } catch (error) {
+                            console.error('Ошибка при обработке экстринзика:', error)
+                        }
+                    }
                 }
-                console.log(`Обработка ${blocks.length} блоков...`)
+                
+                console.log(`Обработка ${blocks.length} блоков с ${transactions.length} транзакциями и ${processedAccounts.size} аккаунтами...`)
                 
                 // Сохраняем блоки
                 if (blocks.length > 0) {
@@ -80,34 +159,16 @@ async function main() {
                     console.log('Блоки успешно сохранены')
                 }
                 
-                // Создаем и сохраняем тестовые аккаунты
-                const accounts = [
-                    new Account({ id: 'test_account_1', balance: 1000n, updatedAt: new Date() }),
-                    new Account({ id: 'test_account_2', balance: 500n, updatedAt: new Date() })
-                ]
-                await ctx.store.upsert(accounts)
-                console.log('Тестовые аккаунты успешно сохранены')
+                // Сохраняем аккаунты
+                if (processedAccounts.size > 0) {
+                    await ctx.store.upsert(Array.from(processedAccounts.values()))
+                    console.log('Аккаунты успешно сохранены')
+                }
                 
-                // Создаем и сохраняем тестовые транзакции
-                const transactions: Transaction[] = []
-                if (blocks.length > 0) {
-                    const block = blocks[0]
-                    const tx = new Transaction({
-                        id: `tx-test-${Date.now()}`,
-                        blockNumber: parseInt(block.id),
-                        timestamp: block.timestamp,
-                        status: 'success',
-                        type: 'transfer'
-                    })
-                    tx.block = block
-                    tx.from = accounts[0]
-                    tx.to = accounts[1]
-                    tx.amount = 100n
-                    tx.fee = 1n
-                    transactions.push(tx)
-                    
+                // Сохраняем транзакции
+                if (transactions.length > 0) {
                     await ctx.store.upsert(transactions)
-                    console.log('Тестовые транзакции успешно сохранены')
+                    console.log('Транзакции успешно сохранены')
                 }
                 
                 // Создаем или обновляем статистику
@@ -125,7 +186,7 @@ async function main() {
                     
                     stats.totalBlocks += blocks.length
                     stats.totalTransactions += transactions.length
-                    stats.totalAccounts = accounts.length
+                    stats.totalAccounts = processedAccounts.size
                     stats.lastBlock = blocks.length > 0 ? parseInt(blocks[blocks.length - 1].id) : stats.lastBlock
                     stats.updatedAt = new Date()
                     
