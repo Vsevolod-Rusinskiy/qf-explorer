@@ -6,13 +6,18 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "db:migrate": "npx squid-typeorm-migration apply",
-    "processor:start": "node lib/main.js",
-    "query-node:start": "squid-graphql-server",
+    "db:migrate": "sqd db migrate",
+    "processor:start": "node ./lib/direct-processor.js",
+    "query-node:start": "sqd serve",
     "dev": "npm run build && npm run db:migrate && npm run processor:start",
     "start": "npm run build && npm run db:migrate && concurrently 'npm run processor:start' 'npm run query-node:start'",
     "test": "echo \"Info: no test specified\" && exit 0",
-    "clean": "rm -rf lib db .env"
+    "clean": "rm -rf lib db .env",
+    "codegen": "sqd codegen",
+    "typegen": "sqd typegen",
+    "squid:build": "sqd build",
+    "squid:up": "sqd up",
+    "squid:down": "sqd down"
   },
   "dependencies": {
     "@polkadot/api": "^15.9.1",
