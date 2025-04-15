@@ -36,9 +36,31 @@
   ```
 - Реализация процессоров для обработки блоков и экстринзиков
 
-## 3. Настройка GraphQL API (1 день)
+## 3. Настройка GraphQL API и REST API (2 дня)
 - Настройка Hasura с PostgreSQL
 - Создание GraphQL схемы (авто-генерация через Hasura)
+- Создание NestJS приложения:
+  ```bash
+  nest new qf-explorer-api
+  ```
+- Реализация REST API для управления процессором:
+  ```typescript
+  // src/processor/processor.controller.ts
+  @Controller('processor')
+  export class ProcessorController {
+    @Post('update')
+    async updateData() {
+      // Запуск процессора для обновления данных
+      return await this.processorService.runUpdate();
+    }
+    
+    @Get('status')
+    async getStatus() {
+      // Получение статуса обновления
+      return await this.processorService.getStatus();
+    }
+  }
+  ```
 - Определение запросов для основных данных:
   ```graphql
   query GetLatestBlocks {

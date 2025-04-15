@@ -6,85 +6,18 @@
 /qf-explorer/
   /frontend/                  # Фронтенд-приложение Next.js
   /squid/                     # Индексер на Squid SDK
+  /api/                       # NestJS REST API
+    /src/
+      /processor/            # Модуль управления процессором
+        processor.controller.ts
+        processor.service.ts
+        processor.module.ts
+      /common/              # Общие утилиты и типы
+      app.module.ts
+      main.ts
   /hasura/                    # Конфигурация Hasura GraphQL Engine
   /docker/                    # Docker-конфигурации для развертывания
   /docs/                      # Документация проекта
   .gitignore                 # Игнорируемые файлы
   README.md                  # Основное описание проекта
 ```
-
-## Назначение компонентов
-
-### Frontend
-Фронтенд часть проекта, построенная на Next.js с использованием FSD (Feature-Sliced Design) архитектуры. Отвечает за пользовательский интерфейс блок-эксплорера.
-
-#### Структура фронтенда (с интеграцией Next.js App Router и FSD)
-
-```
-frontend/
-  src/
-    app/                      # Папка Next.js App Router + слой app из FSD
-      _providers/             # Провайдеры приложения
-        apollo-provider.tsx
-        theme-provider.tsx
-        providers.tsx         # Композиция всех провайдеров
-      _styles/                # Глобальные стили
-      _types/                 # Глобальные типы
-      layout.tsx              # Корневой лейаут Next.js с провайдерами
-      page.tsx                # Главная страница
-      blocks/                 # Маршрут /blocks
-        page.tsx              # Компонент страницы блоков
-      transactions/           # Маршрут /transactions
-        page.tsx              # Компонент страницы транзакций
-      accounts/               # Маршрут /accounts
-        [address]/            # Динамический маршрут /accounts/[address]
-          page.tsx            # Страница деталей аккаунта
-    
-    3_pages/                  # Композиция виджетов в страницы
-      blocks/
-        ui/
-          blocks-page.tsx     # Компонентная реализация страницы блоков
-      transactions/
-        ui/
-          transactions-page.tsx  # Компонентная реализация страницы транзакций
-      
-    4_widgets/                # Составные компоненты интерфейса
-      blocks-table/
-      tx-list/
-      account-details/
-      
-    5_features/               # Интерактивные функции
-      search/
-      copy-to-clipboard/
-      
-    6_entities/               # Бизнес-сущности
-      block/
-      transaction/
-      account/
-      
-    7_shared/                 # Переиспользуемые компоненты и утилиты
-      api/                    # API клиенты
-        graphql/              # GraphQL клиент и запросы
-      ui/                     # UI компоненты
-      lib/                    # Библиотеки и утилиты
-      config/                 # Конфигурации
-```
-
-### Squid
-Компонент на базе Squid SDK, отвечающий за индексацию данных из блокчейна QF Network. Подписывается на события блокчейна, обрабатывает блоки и транзакции, сохраняет данные в PostgreSQL.
-
-### Hasura
-Настройки и конфигурация Hasura GraphQL Engine, который автоматически генерирует GraphQL API на основе схемы PostgreSQL. Обеспечивает гибкий доступ к данным.
-
-### Docker
-Конфигурации Docker для локального развертывания и тестирования всех компонентов системы, а также для продакшн-развертывания.
-
-### Docs
-Документация проекта, включающая архитектурные решения, API спецификации и инструкции по развертыванию.
-
-## Следующие шаги
-
-1. Создание скелета проекта с базовой структурой папок
-2. Настройка базовых конфигураций для каждого компонента
-3. Настройка Docker-окружения для локальной разработки
-4. Имплементация первых функциональных возможностей согласно плану в implementation-stages.md 

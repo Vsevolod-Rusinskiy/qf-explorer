@@ -14,7 +14,7 @@ export const processor = new SubstrateBatchProcessor()
     .setRpcEndpoint({
         url: process.env.RPC_QF_WS || 'wss://dev.qfnetwork.xyz/wss',
         rateLimit: 10,
-        maxBatchCallSize: 100 // Ограничиваем размер пакета для стабильности
+        maxBatchCallSize: 10 // Уменьшаем до размера BLOCKS_LIMIT
     })
     .setBlockRange({ from: 14080000 - 100000 }) // Начинаем с более раннего блока
     
