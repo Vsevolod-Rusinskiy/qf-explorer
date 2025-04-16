@@ -129,3 +129,38 @@ https://github.com/QuantumFusion-network/spec/issues/244
 4. Добавление поиска
 5. Настройка WebSocket для обновлений в реальном времени
 
+## �� Памятка по запуску проекта
+
+### 1. Запуск базы данных и Hasura
+```bash
+cd docker
+docker-compose up -d
+```
+
+### 2. Запуск Squid процессора
+```bash
+cd squid
+npm install
+npm run build
+npm run start
+```
+
+### 3. Запуск NestJS API
+```bash
+cd api/qf-explorer-api
+npm install
+npm run start:dev
+```
+
+### 4. Проверка работы
+- Hasura Console: http://localhost:8080
+- API эндпоинты:
+  - Обновление данных: `POST http://localhost:3000/processor/update`
+  - Проверка статуса: `GET http://localhost:3000/processor/status`
+
+### 5. Остановка проекта
+```bash
+cd docker
+docker-compose down
+```
+

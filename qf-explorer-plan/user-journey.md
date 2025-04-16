@@ -83,10 +83,25 @@
 - Пользователь нажимает кнопку "Обновить" на интерфейсе
 - Происходит следующий процесс:
   1. Frontend отправляет POST запрос к NestJS API (`/api/processor/update`)
-  2. NestJS API запускает Squid processor для обновления данных
-  3. Processor очищает и обновляет данные в PostgreSQL
-  4. NestJS API возвращает статус операции
-  5. Frontend запрашивает обновленные данные через GraphQL
+  2. NestJS API проверяет, не запущен ли уже процессор
+  3. Если процессор не запущен:
+     - Запускается Squid processor для обновления данных
+     - Процессор обрабатывает 8 батчей по 10 блоков каждый
+     - Каждый батч сохраняется в PostgreSQL
+  4. NestJS API возвращает статус операции:
+     ```json
+     {
+       "status": "success",
+       "message": "Processor started successfully"
+     }
+     ```
+  5. Frontend может проверять статус через GET `/api/processor/status`:
+     ```json
+     {
+       "isRunning": true/false
+     }
+     ```
+  6. После завершения обновления, frontend запрашивает обновленные данные через GraphQL
 
 Пример взаимодействия с NestJS API:
 ```typescript
@@ -96,23 +111,37 @@ async function updateData() {
     // Запрос на обновление данных
     const response = await fetch('/api/processor/update', {
       method: 'POST'
-    });
-    const result = await response.json();
+    })
+    const result = await response.json()
     
     if (result.status === 'success') {
-      // Запрос обновленных данных через GraphQL
-      await refetchQueries();
+      // Периодически проверяем статус
+      const checkStatus = async () => {
+        const statusResponse = await fetch('/api/processor/status')
+        const { isRunning } = await statusResponse.json()
+        
+        if (!isRunning) {
+          // Запрос обновленных данных через GraphQL
+          await refetchQueries()
+        } else {
+          // Проверяем снова через 2 секунды
+          setTimeout(checkStatus, 2000)
+        }
+      }
+      
+      checkStatus()
     }
   } catch (error) {
-    console.error('Error updating data:', error);
+    console.error('Error updating data:', error)
   }
 }
 ```
 
 В будущих версиях планируется:
 - Автоматическое обновление через WebSocket
-- Отображение прогресса обновления
+- Отображение прогресса обновления в реальном времени
 - Возможность отмены обновления
+- Настройка параметров обновления (количество батчей, размер батча)
 
 ## Технические детали реализации
 
