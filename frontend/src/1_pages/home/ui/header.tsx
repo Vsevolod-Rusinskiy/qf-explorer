@@ -1,17 +1,28 @@
 'use client'
 
-export const Header = () => {
+import clsx from 'clsx'
+
+interface HeaderProps {
+  marginBottom?: number;
+}
+
+export const Header = ({ marginBottom = 8 }: HeaderProps) => {
+  const containerClasses = clsx(
+    "border-b border-gray-500 pb-2",
+    `mb-${marginBottom}`,
+  )
+  
   return (
-    <>
-      <h1 className="text-4xl font-bold mb-8 text-center">
+    <div className={containerClasses}>
+      <h1 className="text-4xl font-bold text-center mb-1">
         QF Network Explorer
       </h1>
       
-      <div className="mb-8 text-center">
-        <p className="mb-4">
+      <div className="text-center">
+        <p className="">
           Добро пожаловать в блок-эксплорер для QuantumFusion Network
         </p>
       </div>
-    </>
+    </div>
   )
 } 
