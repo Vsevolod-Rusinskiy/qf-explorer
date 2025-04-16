@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { Header } from './header'
+import { Nav } from './nav'
 
 export const HomePage = () => {
   const [loading, setLoading] = useState(false)
@@ -9,36 +10,8 @@ export const HomePage = () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold mb-8 text-center">
-          QF Network Explorer
-        </h1>
-        
-        <div className="mb-8 text-center">
-          <p className="mb-4">
-            Добро пожаловать в блок-эксплорер для QuantumFusion Network
-          </p>
-          
-          <div className="flex justify-center gap-4 mt-6">
-            <Link 
-              href="/blocks" 
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Блоки
-            </Link>
-            <Link 
-              href="/transactions" 
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Транзакции
-            </Link>
-            <Link 
-              href="/accounts" 
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Аккаунты
-            </Link>
-          </div>
-        </div>
+        <Header />
+        <Nav />
         
         <div className="border rounded p-6 bg-gray-50">
           <h2 className="text-2xl font-semibold mb-4 text-gray-500" >Статистика сети</h2>
