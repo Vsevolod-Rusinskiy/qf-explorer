@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const axiosClient = axios.create({
-  baseURL: 'http://localhost:3000', // Можно поменять на полный адрес, если нужно
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000', // '/api' если используешь прокси
   timeout: 10000,
 })
 
