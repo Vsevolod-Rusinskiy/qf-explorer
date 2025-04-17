@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export const axiosClient = axios.create({
-  baseURL: '/api', // Можно поменять на полный адрес, если нужно
+  baseURL: 'http://localhost:3000', // Можно поменять на полный адрес, если нужно
   timeout: 10000,
 })
 
