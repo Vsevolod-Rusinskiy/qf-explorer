@@ -6,7 +6,7 @@ interface HeaderProps {
   marginBottom?: number;
 }
 
-export const Header = ({ marginBottom = 8 }: HeaderProps) => {
+export const Header = ({ marginBottom }: HeaderProps) => {
   const containerClasses = clsx(
     "border-b border-gray-500 pb-2",
     `mb-${marginBottom}`,

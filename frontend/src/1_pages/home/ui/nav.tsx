@@ -7,7 +7,7 @@ interface NavProps {
   marginBottom?: number;
 }
 
-export const Nav = ({ marginBottom = 8 }: NavProps) => {
+export const Nav = ({ marginBottom = 4 }: NavProps) => {
   const containerClasses = clsx(
     `mb-${marginBottom}`
   )

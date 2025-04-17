@@ -8,7 +8,7 @@ import { BlockListWidget } from '@/4_widgets/block-list/ui/block-list-widget'
 
 export const HomePage = () => {
   return (
-    <HomePageLayout header={<Header />}>
+    <HomePageLayout header={<Header marginBottom={4} />}>
         <Nav  />
         <StatisticsBlock loading={false}/>
         <BlockListWidget />

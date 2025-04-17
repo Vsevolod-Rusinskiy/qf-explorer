@@ -13,7 +13,7 @@ export const BlockListWidget = () => {
   }
 
   return (
-    <div className="my-8 p-4 border rounded bg-white">
+    <div className="my-8 p-4 border rounded bg-white text-gray-500">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">Список блоков</h2>
         <button
