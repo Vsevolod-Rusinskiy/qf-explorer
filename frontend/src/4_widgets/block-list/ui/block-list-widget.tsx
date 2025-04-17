@@ -1,18 +1,14 @@
 'use client'
 
+import { axiosClient } from '@/5_shared/api/axios-client'
+
 export const BlockListWidget = () => {
   const handleUpdate = async () => {
     try {
-      const res = await fetch('/api/processor/update', {
-        method: 'POST',
-      })
-      if (res.ok) {
-        alert('Обновление запущено!')
-      } else {
-        alert('Ошибка при запуске обновления')
-      }
-    } catch (e) {
-      alert('Ошибка сети!')
+      await axiosClient.post('/processor/update')
+      alert('Обновление запущено!')
+    } catch {
+      // Ошибка уже обработана в interceptor
     }
   }
 
