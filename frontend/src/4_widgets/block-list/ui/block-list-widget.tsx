@@ -1,32 +1,10 @@
 'use client'
 
-import { useQuery, gql } from '@apollo/client'
 import { axiosClient } from '@/5_shared/api/axios-client'
-
-type Block = {
-  id: string
-  hash: string
-  timestamp: string
-  validator: string | null
-}
-
-type BlockListData = {
-  block: Block[]
-}
-
-const GET_LATEST_BLOCKS = gql`
-  query GetLatestBlocks {
-    block(order_by: {id: desc}, limit: 10) {
-      id
-      hash
-      timestamp
-      validator
-    }
-  }
-`
+import { useBlockList } from '../model/use-block-list'
 
 export const BlockListWidget = () => {
-  const { data, loading, error, refetch } = useQuery<BlockListData>(GET_LATEST_BLOCKS)
+  const { data, loading, error, refetch } = useBlockList()
 
   console.log('data', data)
   console.log('error', error)
