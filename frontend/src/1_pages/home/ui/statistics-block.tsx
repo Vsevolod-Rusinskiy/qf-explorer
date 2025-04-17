@@ -7,7 +7,7 @@ export const StatisticsBlock = ({loading}: {loading: boolean}) => {
         <h2 className="text-2xl font-semibold mb-4 text-gray-500" >Статистика сети</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatisticsBlokUnit title="Последний блок" value="0" loading={loading} />
+          <StatisticsBlokUnit title="Блоков" value="0" loading={loading} />
           <StatisticsBlokUnit title="Транзакций" value="0" loading={loading} />
           <StatisticsBlokUnit title="Аккаунтов" value="0" loading={loading} />
           <StatisticsBlokUnit title="Время блока" value="0.1s" loading={loading} />
