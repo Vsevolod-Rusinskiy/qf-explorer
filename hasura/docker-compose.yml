@@ -14,6 +14,8 @@ services:
       HASURA_GRAPHQL_DEV_MODE: "true"
       ## Disable JWT auth for now (will add later)
       HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      ## Allow unauthenticated public access
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: public
       ## Enable logs
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## Allow lists configuration

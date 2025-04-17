@@ -10,7 +10,6 @@ interface ProvidersProps {
 export const Providers = ({ children }: ProvidersProps) => {
   return (
     <ApolloProviderCustom>
-      {/* Здесь будут добавляться провайдеры: Apollo, React Query и др. */}
       {children}
     </ApolloProviderCustom>
   )
