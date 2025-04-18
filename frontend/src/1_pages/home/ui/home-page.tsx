@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { Header } from './header'
 import { HomePageLayout } from './home-page-layout'
-import { StatisticsBlock } from './statistics-block'
-import { BlockListWidget, Nav } from '@/2_widgets'
+import { BlockListWidget, StatisticsWidget } from '@/2_widgets'
 import { TransactionListWidget } from '@/2_widgets/transaction-list/ui/transaction-list-widget'
 import { useBlockList } from '@/2_widgets/block-list/model/use-block-list'
 import { useTransactionList } from '@/2_widgets/transaction-list/model/use-transaction-list'
+import { useStatistics } from '@/2_widgets/statistics/model/use-statistics'
 import { UpdateButton } from '@/5_shared/ui/buttons/update-button'
 import { axiosClient } from '@/5_shared/api/axios-client'
 
@@ -23,6 +23,7 @@ async function checkProcessorStatus() {
 export const HomePage = () => {
   const { data: blockData, loading: blockLoading, error: blockError, refetch: refetchBlocks } = useBlockList()
   const { data: txData, loading: txLoading, error: txError, refetch: refetchTx } = useTransactionList()
+  const { data: statsData, loading: statsLoading, error: statsError, refetch: refetchStats } = useStatistics()
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
 
@@ -42,7 +43,8 @@ export const HomePage = () => {
       if (!isRunning) {
         await Promise.all([
           refetchBlocks(),
-          refetchTx()
+          refetchTx(),
+          refetchStats()
         ])
       } else {
         setUpdateError('Процессор не завершил работу за 60 секунд')
@@ -56,13 +58,17 @@ export const HomePage = () => {
 
   return (
     <HomePageLayout header={<Header marginBottom={4} />}>
-      <Nav />
       <div className="flex justify-end mb-4">
         <UpdateButton isUpdating={isUpdating} onUpdate={handleUpdate}>
           Обновить
         </UpdateButton>
       </div>
-      <StatisticsBlock loading={false}/>
+      <StatisticsWidget
+        data={statsData?.statistics_by_pk}
+        loading={statsLoading}
+        error={statsError}
+        isUpdating={isUpdating}
+      />
       <BlockListWidget
         data={blockData}
         loading={blockLoading}
