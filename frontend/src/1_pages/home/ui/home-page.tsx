@@ -2,10 +2,9 @@
 
 import { useState } from 'react'
 import { Header } from './header'
-import { Nav } from './nav'
 import { HomePageLayout } from './home-page-layout'
 import { StatisticsBlock } from './statistics-block'
-import { BlockListWidget } from '@/2_widgets'
+import { BlockListWidget, Nav } from '@/2_widgets'
 import { TransactionListWidget } from '@/2_widgets/transaction-list/ui/transaction-list-widget'
 import { useBlockList } from '@/2_widgets/block-list/model/use-block-list'
 import { useTransactionList } from '@/2_widgets/transaction-list/model/use-transaction-list'
