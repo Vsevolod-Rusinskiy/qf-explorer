@@ -1,5 +1,5 @@
 import { StatisticsBlokUnit } from "./statistics-block-unit"
-import type { StatisticsData } from '../model/use-statistics'
+import type { StatisticsData } from '@/5_shared/model/use-statistics'
 
 interface StatisticsWidgetProps {
   data?: StatisticsData
