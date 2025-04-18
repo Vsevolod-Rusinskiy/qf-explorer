@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { axiosClient } from '@/5_shared/api/axios-client'
 import { useBlockList } from '../model/use-block-list'
 import { TableList } from './table-list'
+import { BlockListHeader } from './block-list-header'
 
 async function checkProcessorStatus() {
   try {
@@ -46,16 +47,7 @@ export const BlockListWidget = () => {
 
   return (
     <div className="my-8 p-4 border rounded bg-white text-gray-500">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Список блоков</h2>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-          onClick={handleUpdate}
-          disabled={isUpdating}
-        >
-          {isUpdating ? 'Обновление...' : 'Обновить'}
-        </button>
-      </div>
+      <BlockListHeader isUpdating={isUpdating} onUpdate={handleUpdate} />
       {(loading || isUpdating) && <div>Загрузка...</div>}
       {error && <div className="text-red-500">Ошибка загрузки блоков</div>}
       {updateError && <div className="text-red-500">{updateError}</div>}
