@@ -1,4 +1,4 @@
-import type { BlockListData, Block } from '../model/use-block-list'
+import type { BlockListData, Block } from '@/5_shared/model/use-block-list'
 
 export function TableList({ data }: { data: BlockListData }) {
     return (
@@ -8,7 +8,7 @@ export function TableList({ data }: { data: BlockListData }) {
               <th className="py-1 px-2">ID</th>
               <th className="py-1 px-2">Hash</th>
               <th className="py-1 px-2">Время</th>
-              <th className="py-1 px-2">Валидатор</th>
+              <th className="py-1 px-2">Статус</th>
             </tr>
           </thead>
           <tbody>
@@ -17,7 +17,7 @@ export function TableList({ data }: { data: BlockListData }) {
                 <td className="py-1 px-2 font-mono">{b.id}</td>
                 <td className="py-1 px-2 font-mono truncate max-w-xs">{b.hash}</td>
                 <td className="py-1 px-2">{new Date(b.timestamp).toLocaleString()}</td>
-                <td className="py-1 px-2 font-mono">{b.validator}</td>
+                <td className="py-1 px-2">{b.status}</td>
               </tr>
             ))}
           </tbody>

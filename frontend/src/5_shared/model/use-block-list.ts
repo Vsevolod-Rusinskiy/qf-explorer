@@ -4,7 +4,7 @@ export type Block = {
   id: string
   hash: string
   timestamp: string
-  validator: string | null
+  status: string
 }
 
 export type BlockListData = {
@@ -17,7 +17,7 @@ const GET_LATEST_BLOCKS = gql`
       id
       hash
       timestamp
-      validator
+      status
     }
   }
 `

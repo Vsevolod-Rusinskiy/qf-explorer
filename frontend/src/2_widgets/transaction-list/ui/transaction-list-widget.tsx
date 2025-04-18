@@ -19,16 +19,16 @@ export const TransactionListWidget = ({ data, loading, error, isUpdating }: Tran
           <thead>
             <tr>
               <th className="py-1 px-2">ID</th>
-              <th className="py-1 px-2">Статус</th>
               <th className="py-1 px-2">Время</th>
+              <th className="py-1 px-2">Статус</th>
             </tr>
           </thead>
           <tbody>
             {data?.transaction.map((t) => (
               <tr key={t.id} className="border-t">
                 <td className="py-1 px-2 font-mono">{t.id}</td>
-                <td className="py-1 px-2">{t.status}</td>
                 <td className="py-1 px-2">{new Date(t.timestamp).toLocaleString()}</td>
+                <td className="py-1 px-2">{t.status}</td>
               </tr>
             ))}
           </tbody>

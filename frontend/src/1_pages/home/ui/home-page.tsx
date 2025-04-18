@@ -28,10 +28,10 @@ export const HomePage = () => {
   const [updateError, setUpdateError] = useState<string | null>(null)
 
   // Логи для диагностики
-  console.log('statsData:', statsData)
-  console.log('statsError:', statsError)
-  console.log('blockData:', blockData)
-  console.log('blockError:', blockError)
+  // console.log('statsData:', statsData)
+  // console.log('statsError:', statsError)
+  // console.log('blockData:', blockData)
+  // console.log('blockError:', blockError)
 
   const handleUpdate = async () => {
     setIsUpdating(true)
