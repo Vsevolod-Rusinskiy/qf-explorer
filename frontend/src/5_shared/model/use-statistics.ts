@@ -1,6 +1,7 @@
 import { useQuery, gql } from '@apollo/client'
 
 export type Statistics = {
+  id: string
   total_blocks: number
   total_transactions: number
   total_accounts: number
@@ -8,12 +9,13 @@ export type Statistics = {
 }
 
 export type StatisticsData = {
-  statistics_by_pk: Statistics
+  statistics: Statistics[]
 }
 
 const GET_STATISTICS = gql`
   query GetStatistics {
-    statistics_by_pk(id: "current") {
+    statistics(where: {id: {_eq: "current"}}) {
+      id
       total_blocks
       total_transactions
       total_accounts

@@ -27,6 +27,12 @@ export const HomePage = () => {
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
 
+  // Логи для диагностики
+  console.log('statsData:', statsData)
+  console.log('statsError:', statsError)
+  console.log('blockData:', blockData)
+  console.log('blockError:', blockError)
+
   const handleUpdate = async () => {
     setIsUpdating(true)
     setUpdateError(null)
@@ -64,7 +70,7 @@ export const HomePage = () => {
         </UpdateButton>
       </div>
       <StatisticsWidget
-        data={statsData?.statistics_by_pk}
+        data={statsData}
         loading={statsLoading}
         error={statsError}
         isUpdating={isUpdating}
