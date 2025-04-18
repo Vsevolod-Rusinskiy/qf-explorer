@@ -1,5 +1,5 @@
 import React from 'react'
-import { UpdateButton } from '@/5_features/block-list-update/ui/update-button'
+import { UpdateButton } from '@/5_shared/ui/buttons/update-button'
 
 interface BlockListHeaderProps {
   isUpdating: boolean
