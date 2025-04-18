@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { axiosClient } from '@/5_shared/api/axios-client'
 import { useBlockList } from '../model/use-block-list'
+import { TableList } from './table-list'
 
 async function checkProcessorStatus() {
   try {
@@ -59,26 +60,7 @@ export const BlockListWidget = () => {
       {error && <div className="text-red-500">Ошибка загрузки блоков</div>}
       {updateError && <div className="text-red-500">{updateError}</div>}
       {!loading && !isUpdating && !error && !updateError && (
-        <table className="w-full text-left">
-          <thead>
-            <tr>
-              <th className="py-1 px-2">ID</th>
-              <th className="py-1 px-2">Hash</th>
-              <th className="py-1 px-2">Время</th>
-              <th className="py-1 px-2">Валидатор</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.block.map((b) => (
-              <tr key={b.id} className="border-t">
-                <td className="py-1 px-2 font-mono">{b.id}</td>
-                <td className="py-1 px-2 font-mono truncate max-w-xs">{b.hash}</td>
-                <td className="py-1 px-2">{new Date(b.timestamp).toLocaleString()}</td>
-                <td className="py-1 px-2 font-mono">{b.validator}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableList data={data ?? { block: [] }} />
       )}
     </div>
   )
