@@ -25,7 +25,7 @@ const dataSourceConfig = {
 const BLOCKS_LIMIT = 10
 
 // Сколько батчей обработать
-const MAX_BATCHES = 8
+const MAX_BATCHES = 2
 
 // Счетчик батчей и общего количества блоков
 let batchCount = 0
@@ -68,20 +68,13 @@ async function main() {
             isolationLevel: 'READ COMMITTED'
         }), async (ctx) => {
             try {
-                // Увеличиваем счетчик батчей
                 batchCount++
                 console.log(`Обработка батча #${batchCount} из ${MAX_BATCHES}...`)
-                
-                // Если достигли максимального количества батчей, останавливаем процессор
+
+                // Если достигли максимального количества батчей, останавливаем процессор сразу
                 if (batchCount > MAX_BATCHES) {
                     console.log(`Достигнуто ограничение в ${MAX_BATCHES} батчей, завершаем обработку.`)
-                    
-                    // Завершаем процесс после текущего батча
-                    setTimeout(() => {
-                        console.log('Завершение процесса...')
-                        process.exit(0)
-                    }, 100)
-                    
+                    process.exit(0)
                     return
                 }
                 
