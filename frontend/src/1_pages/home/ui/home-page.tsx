@@ -8,6 +8,7 @@ import { StatisticsBlock } from './statistics-block'
 import { BlockListWidget } from '@/2_widgets'
 import { TransactionListWidget } from '@/2_widgets/transaction-list/ui/transaction-list-widget'
 import { useBlockList } from '@/2_widgets/block-list/model/use-block-list'
+import { useTransactionList } from '@/2_widgets/transaction-list/model/use-transaction-list'
 import { UpdateButton } from '@/5_shared/ui/buttons/update-button'
 import { axiosClient } from '@/5_shared/api/axios-client'
 
@@ -21,7 +22,8 @@ async function checkProcessorStatus() {
 }
 
 export const HomePage = () => {
-  const { data, loading, error, refetch } = useBlockList()
+  const { data: blockData, loading: blockLoading, error: blockError, refetch: refetchBlocks } = useBlockList()
+  const { data: txData, loading: txLoading, error: txError, refetch: refetchTx } = useTransactionList()
   const [isUpdating, setIsUpdating] = useState(false)
   const [updateError, setUpdateError] = useState<string | null>(null)
 
@@ -39,7 +41,10 @@ export const HomePage = () => {
         attempts++
       }
       if (!isRunning) {
-        await refetch()
+        await Promise.all([
+          refetchBlocks(),
+          refetchTx()
+        ])
       } else {
         setUpdateError('Процессор не завершил работу за 60 секунд')
       }
@@ -60,13 +65,18 @@ export const HomePage = () => {
       </div>
       <StatisticsBlock loading={false}/>
       <BlockListWidget
-        data={data}
-        loading={loading}
-        error={error}
+        data={blockData}
+        loading={blockLoading}
+        error={blockError}
         isUpdating={isUpdating}
         updateError={updateError}
       />
-      <TransactionListWidget />
+      <TransactionListWidget
+        data={txData}
+        loading={txLoading}
+        error={txError}
+        isUpdating={isUpdating}
+      />
     </HomePageLayout>
   )
 } 

@@ -1,15 +1,20 @@
-import { useTransactionList } from '../model/use-transaction-list'
 import { Spinner } from '@/5_shared/ui'
+import type { TransactionListData } from '../model/use-transaction-list'
 
-export const TransactionListWidget = () => {
-  const { data, loading, error } = useTransactionList()
+interface TransactionListWidgetProps {
+  data?: TransactionListData
+  loading: boolean
+  error?: any
+  isUpdating: boolean
+}
 
+export const TransactionListWidget = ({ data, loading, error, isUpdating }: TransactionListWidgetProps) => {
   return (
     <div className="my-8 p-4 border rounded bg-white text-gray-500">
       <h2 className="text-xl font-bold mb-4">Список транзакций</h2>
-      {loading && <Spinner />}
+      {(loading || isUpdating) && <Spinner />}
       {error && <div className="text-red-500">Ошибка загрузки транзакций</div>}
-      {!loading && !error && (
+      {!loading && !isUpdating && !error && (
         <table className="w-full text-left">
           <thead>
             <tr>
