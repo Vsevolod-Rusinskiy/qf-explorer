@@ -5,6 +5,7 @@ import { axiosClient } from '@/5_shared/api/axios-client'
 import { useBlockList } from '../model/use-block-list'
 import { TableList } from './table-list'
 import { BlockListHeader } from './block-list-header'
+import { Spinner } from '@/5_shared/ui'
 
 async function checkProcessorStatus() {
   try {
@@ -48,7 +49,7 @@ export const BlockListWidget = () => {
   return (
     <div className="my-8 p-4 border rounded bg-white text-gray-500">
       <BlockListHeader isUpdating={isUpdating} onUpdate={handleUpdate} />
-      {(loading || isUpdating) && <div>Загрузка...</div>}
+      {(loading || isUpdating) && <Spinner />}
       {error && <div className="text-red-500">Ошибка загрузки блоков</div>}
       {updateError && <div className="text-red-500">{updateError}</div>}
       {!loading && !isUpdating && !error && !updateError && (
