@@ -1,5 +1,5 @@
 import { Spinner } from '@/5_shared/ui'
-import type { TransactionListData } from '../model/use-transaction-list'
+import type { TransactionListData } from '@/5_shared/model/use-transaction-list'
 
 interface TransactionListWidgetProps {
   data?: TransactionListData
