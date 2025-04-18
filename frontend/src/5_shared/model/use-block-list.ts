@@ -13,7 +13,7 @@ export type BlockListData = {
 
 const GET_LATEST_BLOCKS = gql`
   query GetLatestBlocks {
-    block(order_by: {id: desc}, limit: 10) {
+    block(order_by: {id: desc}, limit: 20) {
       id
       hash
       timestamp

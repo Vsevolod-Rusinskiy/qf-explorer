@@ -12,7 +12,7 @@ export type TransactionListData = {
 
 const GET_LATEST_TRANSACTIONS = gql`
   query GetLatestTransactions {
-    transaction(order_by: {timestamp: desc}, limit: 10) {
+    transaction(order_by: {timestamp: desc}, limit: 20) {
       id
       status
       timestamp
