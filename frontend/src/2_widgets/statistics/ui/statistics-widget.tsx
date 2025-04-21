@@ -4,7 +4,7 @@ import type { StatisticsData } from '@/5_shared/model/use-statistics'
 interface StatisticsWidgetProps {
   data?: StatisticsData
   loading: boolean
-  error?: any
+  error?: unknown
   isUpdating: boolean
 }
 
@@ -14,7 +14,7 @@ export const StatisticsWidget = ({ data, loading, error, isUpdating }: Statistic
   return (
     <div className="border rounded p-6 bg-gray-50">
       <h2 className="text-2xl font-semibold mb-4 text-gray-500" >Статистика сети</h2>
-      {error && <div className="text-red-500 mb-2">Ошибка загрузки статистики</div>}
+      {error != null && <div className="text-red-500 mb-2">Ошибка загрузки статистики</div>}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <StatisticsBlokUnit title="Блоков" value={String(stats?.total_blocks ?? 0)} loading={isLoading} />
         <StatisticsBlokUnit title="Транзакций" value={String(stats?.total_transactions ?? 0)} loading={isLoading} />

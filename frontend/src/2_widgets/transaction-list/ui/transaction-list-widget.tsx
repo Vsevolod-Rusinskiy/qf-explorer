@@ -4,7 +4,7 @@ import type { TransactionListData } from '@/5_shared/model/use-transaction-list'
 interface TransactionListWidgetProps {
   data?: TransactionListData
   loading: boolean
-  error?: any
+  error?: unknown
   isUpdating: boolean
 }
 
@@ -13,7 +13,7 @@ export const TransactionListWidget = ({ data, loading, error, isUpdating }: Tran
     <div className="my-8 p-4 border rounded bg-white text-gray-500">
       <h2 className="text-xl font-bold mb-4">Список транзакций</h2>
       {(loading || isUpdating) && <Spinner />}
-      {error && <div className="text-red-500">Ошибка загрузки транзакций</div>}
+      {error != null && <div className="text-red-500">Ошибка загрузки транзакций</div>}
       {!loading && !isUpdating && !error && (
         <table className="w-full text-left">
           <thead>
