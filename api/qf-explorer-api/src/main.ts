@@ -10,10 +10,10 @@ console.log('ENV ORIGIN:', process.env.ORIGIN)
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: process.env.ORIGIN || 'http://localhost:3001',
+    origin: process.env.ORIGIN || 'http://localhost:3004',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3003);
 }
 bootstrap();
